@@ -1,44 +1,54 @@
 #Author: khoidd
 
 from os import listdir
-import scipy.io.wavfile as wavfile
+import warnings
 import pandas as pd
+import numpy as np
+import librosa
 
 
-def read_audio(file_name, second=30):
-    sr, src = wavfile.read(file_name, mmap=True)
+def __read_audio_file(file_name: str) -> (np.ndarray, int):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        y, sr = librosa.load(file_name)
 
-    audio_len = src.shape[0]
-    sample_len = sr*second
-
-    if audio_len < sample_len:
-        raise "[ERROR] Audio length is not enough!"
-
-    return src[0:sample_len].T
+    return y, sr
 
 
-def extract_audio(directory: str, limit):
-    cf_song: dict = pd.read_pickle('model/cf_song.pkl')
-    # list data file (audio format)
-    ls_song_id = set([int(f[:-4]) for f in listdir(directory)])
-    if limit > 0 and limit < len(ls_song_id):
-        ls_song_id = ls_song_id[:limit]
-    # create feature/label matrix
-    feature_list = []
-    label_list = []
+def __extract_audio_file(file_name: str, label: int, dtime=5):
+    y, sr = __read_audio_file(file_name)
+
+    audio_size = y.shape[0]
+    sample_size = dtime * sr
+    num_of_sample = audio_size // sample_size
+
+    ls_feature = []
+    ls_label = []
+
+    if num_of_sample > 0:
+        temp = y[0:num_of_sample*sample_size]
+        ls_feature.extend(np.split(temp, num_of_sample))
+        ls_label.extend([label] * num_of_sample)
+
+    return ls_feature, ls_label
+
+
+def __read_audio_directory(directory: str, label, limit=5, format='wav'):
+    ls_song_id = [ f.split('.')[0] 
+        for f in listdir(directory)
+        if f.split('.')[-1] == format
+    ][:limit]
+
+    ls_feature = []
+    ls_label = []
+
     for song_id in ls_song_id:
-        file_name = '%s/%s.wav' % (directory, song_id)
-        feature_list.append(read_audio(file_name))
-        label_list.append(cf_song.get(song_id))
+        file_name = '%s/%s.%s' % (directory, song_id, format)
+        features, labels = __extract_audio_file(file_name, label)
+        ls_feature.extend(features)
+        ls_label.extend(labels)
 
-    feature_data = np.array(feature_list)
-    label_data = np.array(label_list)
+    feature_data = np.array(ls_feature)
+    label_data = np.array(ls_label)
 
     return feature_data, label_data
-
-
-def load_dataset(directory: str, limit=5):
-    x_data, y_data = extract_audio(directory, limit)
-    print("size of dataset: %i" % (x_data.shape[0]))
-
-    return x_data, y_data
