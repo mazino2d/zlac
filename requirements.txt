@@ -1,0 +1,7 @@
+pandas>=1.0.5
+numpy>=1.18.5
+librosa>=0.8.0
+tensorflow>=2.3.0
+pydot>=1.4.1
+pydotplus>=2.0.2
+kapre @ git+https://github.com/keunwoochoi/kapre.git

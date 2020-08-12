@@ -1,13 +1,29 @@
-### Lossless audio checker model
+## Lossless audio checker model
 
 
-### Fix some bug
+### Install dependencies
 
-- Can not converts a Keras model to dot format and save to a file
-
+```bash
+pip install -r requirements.txt
+# or
+pip install pandas numpy librosa tensorflow
+pip install git+https://github.com/keunwoochoi/kapre.git
 ```
-pip3 install pydot pydotplus
-sudo apt-get install graphviz
+
+**Note**: You must use [Python3](https://www.python.org/downloads/)
+
+### How to plot model
+
+- Install [graphviz](https://graphviz.org/): `sudo apt-get install graphviz`
+
+- Example code:
+
+```python
+from utils import *
+
+if __name__ == "__main__":
+    LIST_POOL_SIZE = [(3, 4), (2, 4), (2, 2), (2, 2), (2, 2), (2, 2)]
+    model = gen_model(LIST_POOL_SIZE, rate_dropout=0.05, is_plot_mode=True)
 ```
 
 ### Project infomation

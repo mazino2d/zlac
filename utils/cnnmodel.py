@@ -1,8 +1,5 @@
 #Author: khoidd
 
-from kapre.time_frequency import Melspectrogram
-from tensorflow.keras.layers import *
-from tensorflow.keras import Model
 import os
 # 0 = all messages are logged (default behavior)
 # 1 = INFO messages are not printed
@@ -10,8 +7,14 @@ import os
 # 3 = INFO, WARNING, and ERROR messages are not printed
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+import tensorflow as tf
+from tensorflow.keras import Model
+from tensorflow.keras.layers import *
+from kapre.time_frequency import Melspectrogram
 
-def gen_model(list_pool_size, num_input=2, size_embed=32, rate_dropout=1, axis_channel=1, audio_sample_rate=22050, num_sec=3):
+
+
+def gen_model(list_pool_size, rate_dropout=1, axis_channel=1, audio_sample_rate=22050, num_sec=3, is_plot_mode=False):
 
     shape_wave_form = (axis_channel, audio_sample_rate * num_sec)
 
@@ -42,6 +45,12 @@ def gen_model(list_pool_size, num_input=2, size_embed=32, rate_dropout=1, axis_c
     model = Model(inputs=[inpt1, inpt2],
                   outputs=combined, name="ana_audio_model")
     model.compile(optimizer='adam', loss='mse', metrics=['mse', 'mae'])
+
+    if is_plot_mode:
+        tf.keras.utils.plot_model(model, to_file='model.png', show_shapes=True, 
+        show_layer_names=True, rankdir='TB', expand_nested=False, dpi=256)
+
+        model.summary()
 
     return model
 
