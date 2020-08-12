@@ -1,6 +1,6 @@
 #Author: khoidd
 
-from os import listdir
+import os
 import warnings
 import pandas as pd
 import numpy as np
@@ -15,7 +15,7 @@ def __read_audio_file(file_name: str) -> (np.ndarray, int):
     return y, sr
 
 
-def __extract_audio_file(file_name: str, label: int, dtime=5):
+def __extract_audio_file(file_name: str, label: int, dtime=3):
     y, sr = __read_audio_file(file_name)
 
     audio_size = y.shape[0]
@@ -33,9 +33,9 @@ def __extract_audio_file(file_name: str, label: int, dtime=5):
     return ls_feature, ls_label
 
 
-def __read_audio_directory(directory: str, label, limit=5, format='wav'):
+def read_audio_directory(directory: str, label, limit=5, format='wav'):
     ls_song_id = [ f.split('.')[0] 
-        for f in listdir(directory)
+        for f in os.listdir(directory)
         if f.split('.')[-1] == format
     ][:limit]
 
