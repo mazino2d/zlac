@@ -20,7 +20,7 @@ def gen_model(list_pool_size, rate_dropout=1, axis_channel=1, audio_sample_rate=
 
     inpt1 = Input(
         shape=shape_wave_form,
-        name="inpt_1",
+        name='inpt_1',
     )
 
     outpt1 = inpt1
@@ -31,7 +31,7 @@ def gen_model(list_pool_size, rate_dropout=1, axis_channel=1, audio_sample_rate=
 
     inpt2 = Input(
         shape=shape_wave_form,
-        name="inpt_2",
+        name='inpt_2',
     )
 
     outpt2 = inpt2
@@ -42,14 +42,13 @@ def gen_model(list_pool_size, rate_dropout=1, axis_channel=1, audio_sample_rate=
 
     combined = Subtract()([outpt1, outpt2])
 
-    model = Model(inputs=[inpt1, inpt2],
-                  outputs=combined, name="ana_audio_model")
+    model = Model(inputs=[inpt1, inpt2], outputs=combined, name='zlac')
     model.compile(optimizer='adam', loss='mse', metrics=['mse', 'mae'])
 
     if is_plot_mode:
         tf.keras.utils.plot_model(model, to_file='model.png', show_shapes=True, 
         show_layer_names=True, rankdir='TB', expand_nested=False, dpi=256)
-
+        
         model.summary()
 
     return model
